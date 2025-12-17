@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReasonBench Results</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .terminal-window {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 900px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #0d1117;
+            padding: 10px 15px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+        }
+        .dots { display: flex; gap: 6px; margin-right: 15px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background-color: #ff5f56; }
+        .yellow { background-color: #ffbd2e; }
+        .green { background-color: #27c93f; }
+        .title { font-size: 14px; color: #8b949e; }
+        
+        .content { padding: 20px; font-size: 14px; line-height: 1.5; }
+        .command { color: #f0f6fc; margin-bottom: 15px; }
+        .prompt { color: #2f81f7; }
+        
+        .log-entry {
+            margin-bottom: 25px;
+            border-left: 3px solid #30363d;
+            padding-left: 15px;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .tag-q { background: #1f6feb; color: white; }
+        .tag-student { background: #d29922; color: white; }
+        .tag-judge { background: #238636; color: white; }
+        
+        .section-title {
+            color: #8b949e;
+            font-size: 12px;
+            margin-bottom: 4px;
+            margin-top: 12px;
+            display: block;
+        }
+        
+        .text-output { color: #c9d1d9; }
+        .success-text { color: #7ee787; }
+        .highlight { background-color: rgba(56, 139, 253, 0.15); padding: 0 4px; border-radius: 2px; color: #58a6ff; }
+        
+        .progress-bar { color: #7ee787; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <div class="header">
+            <div class="dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="title">tosin@ReasonBench: ~/experiments</div>
+        </div>
+        
+        <div class="content">
+            <div class="command">
+                <span class="prompt">tosin@ReasonBench:~$</span> python main.py --model gemini-2.5-flash
+            </div>
+            
+            <div class="text-output" style="margin-bottom: 15px;">
+                📡 Connecting to Google Gemini API...<br>
+                📊 Loading GSM8K Lite Dataset...<br>
+                🔬 Starting ReasonBench Experiment...
+            </div>
+            
+            <div class="progress-bar">
+                [==================================================] 100% Complete
+            </div>
+
+            <!-- Result 1 -->
+            <div class="log-entry" style="border-left-color: #238636;">
+                <span class="tag tag-q">TASK ID: 001</span>
+                <span class="section-title">QUESTION:</span>
+                <div class="text-output">Natalia sold clips to 48 friends in April, and then half as many in May...</div>
+                
+                <span class="section-title">STUDENT MODEL (Reasoning Trace):</span>
+                <div class="text-output" style="color: #a5d6ff;">
+                    > Clips sold in May = 48 / 2 = 24<br>
+                    > Total clips = 48 + 24 = 72<br>
+                    > Answer: 72
+                </div>
+
+                <span class="section-title">SUPERVISOR EVALUATION (Gemini 2.5):</span>
+                <div class="success-text">
+                    ✅ 1. Correctness: True<br>
+                    🧠 2. Reasoning Gap: No<br>
+                    📝 3. Critique: The candidate's reasoning perfectly aligns with the ground truth. All steps are clearly explained and executed correctly.
+                </div>
+            </div>
+
+            <!-- Result 2 -->
+            <div class="log-entry" style="border-left-color: #238636;">
+                <span class="tag tag-q">TASK ID: 002</span>
+                <span class="section-title">QUESTION:</span>
+                <div class="text-output">Weng earns $12 an hour... yesterday she did 50 minutes...</div>
+                
+                <span class="section-title">STUDENT MODEL (Reasoning Trace):</span>
+                <div class="text-output" style="color: #a5d6ff;">
+                    > Earnings per minute = $12 / 60 = $0.20<br>
+                    > Total = $0.20 * 50 = $10.00<br>
+                    > Answer: $10
+                </div>
+
+                <span class="section-title">SUPERVISOR EVALUATION (Gemini 2.5):</span>
+                <div class="success-text">
+                    ✅ 1. Correctness: True<br>
+                    🧠 2. Reasoning Gap: No<br>
+                    📝 3. Critique: The candidate's reasoning is impeccable. It correctly derives the solution using the per-minute rate. No hallucinations found.
+                </div>
+            </div>
+
+            <div class="command">
+                <span class="prompt">tosin@ReasonBench:~$</span> echo "Experiment Saved to experiment_results.csv"
+            </div>
+            <div class="command">
+                <span class="prompt">tosin@ReasonBench:~$</span> <span class="cursor">_</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
