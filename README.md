@@ -1,47 +1,56 @@
 # ReasonBench: Automated Chain-of-Thought Logic Evaluation 🧠
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![AI Model](https://img.shields.io/badge/Model-Gemini%202.5%20Flash-purple)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Focus](https://img.shields.io/badge/Focus-LLM%20Evaluation-orange)
-![Status](https://img.shields.io/badge/Status-Research%20Prototype-red)
 
 ## 📋 Abstract
-**ReasonBench** is an evaluation framework designed to rigorously audit the reasoning capabilities of Large Language Models (LLMs). Unlike standard benchmarks that only check if the final answer is correct, ReasonBench utilizes an **LLM-as-a-Judge** architecture to validate the entire Chain-of-Thought (CoT) process.
+**ReasonBench** is a research-grade evaluation framework designed to audit the **Chain-of-Thought (CoT)** reasoning capabilities of Large Language Models.
 
-It compiles complex tasks from mathematical datasets (GSM8K), simulates model inference, and generates structured, scientific feedback on logic discrepancies. This tool is designed to improve training data quality for RLHF (Reinforcement Learning from Human Feedback) pipelines.
+Moving beyond simple "string matching" benchmarks, ReasonBench implements an **Adversarial Supervisor Architecture**. It utilizes Google's State-of-the-Art **Gemini 2.5 Flash** to act as a "Professor," rigorously grading the step-by-step logic of "Student" models against complex mathematical datasets (GSM8K).
+
+This project demonstrates a physicist's approach to AI: prioritizing **experimental validation**, **logic diagnostics**, and **reproducible results**.
 
 ---
 
-## 🎯 Alignment with AI Research Roles
-This project was engineered to demonstrate core competencies required for AI Research Scientist roles:
-
-| Job Requirement | ReasonBench Implementation |
+## ⚡ Key Innovations
+| Feature | Description |
 | :--- | :--- |
-| **"Compile external ML competitions into challenging tasks"** | Ingests **GSM8K** (Grade School Math 8K) and custom logic datasets to create high-entropy reasoning challenges. |
-| **"Validate implementations... and mark discrepancies"** | Uses a "Supervisor Model" (GPT-4o) to audit the "Student Model's" logic step-by-step, flagging hallucinations. |
-| **"Evaluate accuracy and depth... to strengthen reasoning"** | Generates a granular "Reasoning Gap" score, distinguishing between calculation errors and logic failures. |
-| **"Provide clear, structured feedback"** | Outputs detailed JSON/CSV reports ready for Data Science analysis and Model Fine-tuning. |
+| **🤖 SOTA Model Integration** | Powered by **Gemini 2.5 Flash**, leveraging the latest advancements in reasoning and context windows. |
+| **🧪 Adversarial Grading** | Implements "LLM-as-a-Judge" to detect **hallucinations** and **reasoning gaps** that standard metrics (BLEU/ROUGE) miss. |
+| **📱 Edge-Ready Architecture** | Optimized for lightweight execution. Capable of running full evaluation loops on mobile environments (Pydroid 3) via API. |
+| **📊 Structured Reporting** | outputs `CSV` datasets containing granular feedback (Correctness, Reasoning Gap, Critique) suitable for **RLHF/DPO fine-tuning**. |
 
 ---
 
-## ⚙️ Methodology & Architecture
+## ⚙️ The Experimental Pipeline
 
-The pipeline follows a strict experimental design:
+The framework follows a strict "Stimulus-Response-Evaluation" loop:
 
-1.  **Stimulus Injection:** Complex reasoning problems are loaded from the validation set.
-2.  **Inference Simulation:** The Candidate Model (e.g., GPT-3.5-turbo, Llama-3) attempts to solve the problem using CoT.
-3.  **Adversarial Evaluation:** The Judge Model (GPT-4o) compares the Candidate's reasoning path against Ground Truth logic.
-4.  **Data Serialization:** Results are compiled into a dataset suitable for **DPO (Direct Preference Optimization)**.
+1.  **Ingestion:** Complex reasoning tasks (GSM8K) are loaded via a custom lightweight loader.
+2.  **Inference:** The system prompts the model to solve the problem using *Chain-of-Thought*.
+3.  **Audit:** The **Supervisor Agent (Gemini 2.5)** compares the generated logic against the Ground Truth.
+4.  **Diagnostics:** A structured report is generated, flagging specific logic failures.
 
-### The Pipeline
 ```mermaid
 graph LR
-    A["Dataset (GSM8K)"] --> B("Student Model Inference")
-    B --> C{"Judge Model Evaluation"}
-    D["Ground Truth"] --> C
-    C --> E["Pass/Fail Logic Report"]
-    E --> F["RLHF Training Data"]
+    A[("Dataset (GSM8K)")] --> B(Student Model Inference)
+    B --> C{Supervisor: Gemini 2.5}
+    D[Ground Truth] --> C
+    C --> E["Pass/Fail & Logic Critique"]
+    E --> F[("RLHF Training Data")]
 ```
+
+---
+
+## 📊 Experimental Results
+
+**ReasonBench** produces detailed diagnostic logs. Below is a real output from the evaluation pipeline demonstrating successful logic validation.
+
+![Experiment Results](results_demo.jpg)
+
+*Figure 1: The Supervisor Model (Gemini 2.5) correctly identifying that the Student Model's logic—calculating a two-step reduction in inventory—was mathematically sound ("Correctness: True").*
 
 ---
 
@@ -49,54 +58,46 @@ graph LR
 
 ### Prerequisites
 *   Python 3.8+
-*   OpenAI API Key (or local LLM endpoint)
+*   Google Gemini API Key (Free Tier supported)
 
-### Setup
+### 1. Clone & Install
 ```bash
-# 1. Clone the repository
 git clone https://github.com/eatosin/ReasonBench.git
 cd ReasonBench
 
-# 2. Install dependencies
+# Install dependencies (pandas, google-generativeai, etc.)
 pip install -r requirements.txt
-
-# 3. Configure Environment
-# Create a .env file and add your API key:
-# OPENAI_API_KEY=sk-xxxx
 ```
 
-### Running the Experiment
-To execute the evaluation loop on a batch of reasoning tasks:
+### 2. Configure Environment
+Create a `.env` file in the root directory:
+```bash
+GEMINI_API_KEY=your_google_api_key_here
+```
+
+### 3. Run the Experiment
+Execute the evaluation loop. The system will automatically detect available models and default to the strongest available (Gemini 2.5 Flash).
 ```bash
 python main.py
 ```
 
 ---
 
-## 📊 Sample Output
-The tool generates `experiment_results.csv` containing structured critiques.
+## 🎯 Career Alignment
+This project was engineered to directly address the core responsibilities of an **AI Research Scientist**:
 
-**Example Log:**
-> **Question:** *Natalia sold clips to 48 friends in April, and then half as many in May...*
->
-> **Student Model Answer:** *[Incorrect Logic Steps...]*
->
-> **Judge Evaluation:**
-> *   **Correctness:** False
-> *   **Reasoning Gap:** Step 2 Logic Failure.
-> *   **Critique:** The model failed to account for the half-reduction in May before calculating the total. It hallucinated a variable 'June'.
-
----
-
-## 🔮 Future Roadmap
-*   [ ] Integration with Local LLMs (Ollama/Llama-cpp) for offline evaluation.
-*   [ ] Visualization Dashboard using Streamlit.
-*   [ ] Auto-generation of DPO preference pairs (Chosen vs. Rejected).
+*   **"Compile external ML competitions into challenging tasks":** Solved via the custom GSM8K ingestion module.
+*   **"Validate implementations and mark discrepancies":** Solved via the `judge.py` logic auditing module.
+*   **"Evaluate accuracy and depth":** Solved by implementing semantic grading over simple accuracy metrics.
+*   **"Work independently... to meet deadlines":** Fully engineered, tested, and deployed from a mobile environment, demonstrating extreme resourcefulness.
 
 ---
 
 ## 👨‍🔬 Author
 **Owadokun Tosin Tobi**
-*Physicist & AI Engineer*
-*   **Focus:** Bridging the gap between Physical System Modeling and AI Reasoning.
+*Physicist & AI Research Engineer*
+*   **Specialization:** Bridging the gap between Physical System Modeling and AI Reasoning.
 *   **GitHub:** [github.com/eatosin](https://github.com/eatosin)
+
+---
+*Built with Python, Google Gemini, and Physics-First Principles.*
