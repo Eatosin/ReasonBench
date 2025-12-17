@@ -7,13 +7,16 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
-    raise ValueError("❌ Error: GEMINI_API_KEY not found in .env file")
+    # Fallback if .env is missing (for safety)
+    print("⚠️ Warning: GEMINI_API_KEY not found. Ensure .env is set locally.")
+else:
+    genai.configure(api_key=api_key)
 
-# 2. Configure Google Gemini
-genai.configure(api_key=api_key)
-
-# We use 'gemini-1.5-flash' because it is fast, free, and smart.
-model = genai.GenerativeModel('gemini-1.5-flash')
+# 2. Configure Model (Using the SOTA Gemini 2.5 Flash)
+try:
+    model = genai.GenerativeModel('gemini-2.5-flash')
+except:
+    model = genai.GenerativeModel('gemini-pro') # Fallback
 
 def get_gemini_response(prompt):
     """
