@@ -1,4 +1,4 @@
-openai
+google-generativeai
 pandas
 datasets
 python-dotenv
