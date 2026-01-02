@@ -1,13 +1,22 @@
-import pandas as pd
+from typing import List, Dict, Any
+import logging
 
-def load_reasoning_data(num_samples=3):
+# Configure module-level logger
+logger = logging.getLogger(__name__)
+
+def load_reasoning_data(num_samples: int = 3) -> List[Dict[str, Any]]:
     """
-    Returns a manual list of hard math problems (GSM8K Lite)
-    Optimized for lightweight execution.
-    """
-    print(f"📊 Loading Lite Dataset ({num_samples} samples)...")
+    Loads the GSM8K dataset (Lite Version) for reasoning evaluation.
     
-    # GSM8K Validation Samples
+    Args:
+        num_samples (int): Number of tasks to load.
+        
+    Returns:
+        List[Dict]: A list of dictionaries containing 'question' and 'answer'.
+    """
+    logger.info(f"Loading GSM8K Lite dataset ({num_samples} samples)...")
+    
+    # GSM8K Validation Samples (Hardcoded for mobile/edge compatibility)
     hard_questions = [
         {
             "question": "Natalia sold clips to 48 friends in April, and then half as many in May. How many clips did Natalia sell altogether in April and May?",
@@ -24,7 +33,3 @@ def load_reasoning_data(num_samples=3):
     ]
     
     return hard_questions[:num_samples]
-
-if __name__ == "__main__":
-    data = load_reasoning_data(1)
-    print("Example:", data[0]['question'])
