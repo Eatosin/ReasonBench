@@ -1,33 +1,49 @@
 import pandas as pd
+import logging
 from tqdm import tqdm
 from dataset_loader import load_reasoning_data
-# Import the new Gemini functions
-from judge import evaluate_logic, get_gemini_response 
+from judge import ReasoningJudge
+import google.generativeai as genai
 
-def solve_problem(question):
+# Configure Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("ReasonBench")
+
+def solve_problem(model, question: str) -> str:
     """
-    The 'Student' model attempts to solve the problem.
-    We ask it to think step-by-step.
+    Simulates the 'Student' model attempting to solve the problem.
     """
     prompt = f"Solve this math problem step-by-step: {question}"
-    return get_gemini_response(prompt)
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        logger.error(f"Student Model Error: {e}")
+        return "Error"
 
 def run_experiment():
-    # Load just 2 questions to test if it works fast
-    tasks = load_reasoning_data(num_samples=2)
+    """
+    Executes the main evaluation loop: Load -> Solve -> Judge -> Save.
+    """
+    # 1. Setup
+    judge = ReasoningJudge()
+    student_model = genai.GenerativeModel('gemini-2.5-flash') # Or 'gemini-pro' if 2.5 unavailable
+    
+    tasks = load_reasoning_data(num_samples=3)
     results = []
 
-    print("\n🔬 Starting ReasonBench Experiment (Powered by Gemini)...\n")
+    logger.info("🔬 Starting ReasonBench Experiment...")
 
-    for task in tqdm(tasks):
+    # 2. Evaluation Loop
+    for task in tqdm(tasks, desc="Evaluating"):
         question = task['question']
         ground_truth = task['answer']
         
-        # 1. Student tries to solve it
-        student_answer = solve_problem(question)
+        # Student Attempt
+        student_answer = solve_problem(student_model, question)
         
-        # 2. Professor grades it
-        evaluation = evaluate_logic(question, student_answer, ground_truth)
+        # Adversarial Judgment
+        evaluation = judge.evaluate(question, student_answer, ground_truth)
         
         results.append({
             "Question": question,
@@ -36,10 +52,11 @@ def run_experiment():
             "Evaluation": evaluation
         })
 
-    # Save results
+    # 3. Save Artifacts
     df = pd.DataFrame(results)
-    df.to_csv("experiment_results.csv", index=False)
-    print("\n✅ Experiment Complete! Results saved to 'experiment_results.csv'")
+    output_file = "experiment_results.csv"
+    df.to_csv(output_file, index=False)
+    logger.info(f"✅ Experiment Complete. Results saved to {output_file}")
 
 if __name__ == "__main__":
     run_experiment()
